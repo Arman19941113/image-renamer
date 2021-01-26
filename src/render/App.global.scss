@@ -1,0 +1,14 @@
+body {
+  position: relative;
+  height: 100vh;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  // 可拖拽的区域
+  -webkit-app-region: drag;
+  div {
+    font-size: 60px;
+  }
+}

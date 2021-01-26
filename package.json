@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
+  "name": "image-renamer",
+  "productName": "ImageRenamer",
+  "description": "ImageRenamer",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
@@ -11,7 +11,7 @@
     "package": "yarn build && electron-builder build --publish never",
     "postinstall": "node -r @babel/register .erb/scripts/CheckNativeDep.js && electron-builder install-app-deps && yarn cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.babel.js && opencollective-postinstall && yarn-deduplicate yarn.lock",
     "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env yarn start:renderer",
-    "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
+    "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
     "test": "jest"
   },
@@ -30,14 +30,12 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "ImageRenamer",
+    "appId": "org.erb.ImageRenamer",
     "files": [
       "dist/",
       "node_modules/",
       "index.html",
-      "main.prod.js",
-      "main.prod.js.map",
       "package.json"
     ],
     "afterSign": ".erb/scripts/Notarize.js",
@@ -86,67 +84,38 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "Arman19941113",
+      "repo": "image-renamer"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/Arman19941113/image-renamer.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Arman19941113",
+    "email": "td19941113@gmail.com",
+    "url": "https://github.com/Arman19941113"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
-    }
-  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/Arman19941113/image-renamer/issues"
   },
   "keywords": [
     "electron",
-    "boilerplate",
-    "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "image",
+    "rename"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/Arman19941113/image-renamer",
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx",
-      "json"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "src/node_modules"
-    ],
-    "setupFiles": [
-      "./.erb/scripts/CheckBuildsExist.js"
-    ]
+    "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+    "moduleDirectories": ["node_modules", "src/node_modules"],
+    "setupFiles": ["./.erb/scripts/CheckBuildsExist.js"]
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -262,33 +231,6 @@
     "node": ">=10.x",
     "npm": ">=6.x",
     "yarn": ">=1.21.3"
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
-  },
-  "browserslist": [],
-  "prettier": {
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".babelrc",
-          ".eslintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ],
-    "singleQuote": true
-  },
-  "renovate": {
-    "extends": [
-      "bliss"
-    ],
-    "baseBranches": [
-      "next"
-    ]
   },
   "husky": {
     "hooks": {

@@ -1,10 +1,4 @@
-import {
-  app,
-  Menu,
-  shell,
-  BrowserWindow,
-  MenuItemConstructorOptions,
-} from 'electron';
+import { app, Menu, shell, BrowserWindow, MenuItemConstructorOptions } from 'electron';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -19,17 +13,11 @@ export default class MenuBuilder {
   }
 
   buildMenu(): Menu {
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.DEBUG_PROD === 'true'
-    ) {
+    if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
       this.setupDevelopmentEnvironment();
     }
 
-    const template =
-      process.platform === 'darwin'
-        ? this.buildDarwinTemplate()
-        : this.buildDefaultTemplate();
+    const template = process.platform === 'darwin' ? this.buildDarwinTemplate() : this.buildDefaultTemplate();
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
@@ -54,17 +42,22 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'ImageRenamer',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About ImageRenamer',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
-        { label: 'Services', submenu: [] },
+        {
+          label: 'Check For Updates',
+          click: () => {
+            // todo
+          },
+        },
         { type: 'separator' },
         {
-          label: 'Hide ElectronReact',
+          label: 'Hide ImageRenamer',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
@@ -73,7 +66,6 @@ export default class MenuBuilder {
           accelerator: 'Command+Shift+H',
           selector: 'hideOtherApplications:',
         },
-        { label: 'Show All', selector: 'unhideAllApplications:' },
         { type: 'separator' },
         {
           label: 'Quit',
@@ -103,13 +95,6 @@ export default class MenuBuilder {
     const subMenuViewDev: MenuItemConstructorOptions = {
       label: 'View',
       submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'Command+R',
-          click: () => {
-            this.mainWindow.webContents.reload();
-          },
-        },
         {
           label: 'Toggle Full Screen',
           accelerator: 'Ctrl+Command+F',
@@ -146,48 +131,37 @@ export default class MenuBuilder {
           accelerator: 'Command+M',
           selector: 'performMiniaturize:',
         },
-        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
+        {
+          label: 'Close',
+          accelerator: 'Command+W',
+          selector: 'performClose:',
+        },
         { type: 'separator' },
-        { label: 'Bring All to Front', selector: 'arrangeInFront:' },
+        {
+          label: 'Bring All to Front',
+          selector: 'arrangeInFront:',
+        },
       ],
     };
     const subMenuHelp: MenuItemConstructorOptions = {
       label: 'Help',
       submenu: [
         {
-          label: 'Learn More',
-          click() {
-            shell.openExternal('https://electronjs.org');
-          },
-        },
-        {
           label: 'Documentation',
           click() {
-            shell.openExternal(
-              'https://github.com/electron/electron/tree/master/docs#readme'
-            );
-          },
-        },
-        {
-          label: 'Community Discussions',
-          click() {
-            shell.openExternal('https://www.electronjs.org/community');
+            shell.openExternal('https://github.com/Arman19941113/image-renamer');
           },
         },
         {
           label: 'Search Issues',
           click() {
-            shell.openExternal('https://github.com/electron/electron/issues');
+            shell.openExternal('https://github.com/Arman19941113/image-renamer/issues');
           },
         },
       ],
     };
 
-    const subMenuView =
-      process.env.NODE_ENV === 'development' ||
-      process.env.DEBUG_PROD === 'true'
-        ? subMenuViewDev
-        : subMenuViewProd;
+    const subMenuView = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true' ? subMenuViewDev : subMenuViewProd;
 
     return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp];
   }
@@ -213,8 +187,7 @@ export default class MenuBuilder {
       {
         label: '&View',
         submenu:
-          process.env.NODE_ENV === 'development' ||
-          process.env.DEBUG_PROD === 'true'
+          process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true'
             ? [
                 {
                   label: '&Reload',
@@ -227,9 +200,7 @@ export default class MenuBuilder {
                   label: 'Toggle &Full Screen',
                   accelerator: 'F11',
                   click: () => {
-                    this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen()
-                    );
+                    this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
                   },
                 },
                 {
@@ -245,9 +216,7 @@ export default class MenuBuilder {
                   label: 'Toggle &Full Screen',
                   accelerator: 'F11',
                   click: () => {
-                    this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen()
-                    );
+                    this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
                   },
                 },
               ],
@@ -256,29 +225,15 @@ export default class MenuBuilder {
         label: 'Help',
         submenu: [
           {
-            label: 'Learn More',
-            click() {
-              shell.openExternal('https://electronjs.org');
-            },
-          },
-          {
             label: 'Documentation',
             click() {
-              shell.openExternal(
-                'https://github.com/electron/electron/tree/master/docs#readme'
-              );
-            },
-          },
-          {
-            label: 'Community Discussions',
-            click() {
-              shell.openExternal('https://www.electronjs.org/community');
+              shell.openExternal('https://github.com/Arman19941113/image-renamer');
             },
           },
           {
             label: 'Search Issues',
             click() {
-              shell.openExternal('https://github.com/electron/electron/issues');
+              shell.openExternal('https://github.com/Arman19941113/image-renamer/issues');
             },
           },
         ],

@@ -6,7 +6,7 @@
  * through IPC.
  *
  * When running `yarn build` or `yarn build-main`, this file is compiled to
- * `./src/main.prod.js` using webpack. This gives us some performance wins.
+ * `./src/dist/main.prod.js` using webpack. This gives us some performance wins.
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -31,10 +31,7 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-if (
-  process.env.NODE_ENV === 'development' ||
-  process.env.DEBUG_PROD === 'true'
-) {
+if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
 }
 
@@ -45,23 +42,18 @@ const installExtensions = async () => {
 
   return installer
     .default(
-      extensions.map((name) => installer[name]),
+      extensions.map(name => installer[name]),
       forceDownload
     )
     .catch(console.log);
 };
 
 const createWindow = async () => {
-  if (
-    process.env.NODE_ENV === 'development' ||
-    process.env.DEBUG_PROD === 'true'
-  ) {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
 
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'resources')
-    : path.join(__dirname, '../resources');
+  const RESOURCES_PATH = app.isPackaged ? path.join(process.resourcesPath, 'resources') : path.join(__dirname, '../../resources');
 
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
@@ -71,17 +63,19 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    minWidth: 640,
+    minHeight: 480,
+    titleBarStyle: 'hidden',
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
     },
   });
 
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  const htmlFile = process.env.NODE_ENV === 'development' ? '../index.dev.html' : '../index.html';
+  mainWindow.loadURL(path.join(`file://${__dirname}`, htmlFile));
 
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.once('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }

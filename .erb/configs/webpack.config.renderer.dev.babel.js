@@ -4,9 +4,9 @@ import webpack from 'webpack';
 import chalk from 'chalk';
 import { merge } from 'webpack-merge';
 import { spawn, execSync } from 'child_process';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from '../scripts/CheckNodeEnv';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
@@ -18,19 +18,13 @@ const port = process.env.PORT || 1212;
 const publicPath = `http://localhost:${port}/dist`;
 const dllDir = path.join(__dirname, '../dll');
 const manifest = path.resolve(dllDir, 'renderer.json');
-const requiredByDLLConfig = module.parent.filename.includes(
-  'webpack.config.renderer.dev.dll'
-);
+const requiredByDLLConfig = module.parent.filename.includes('webpack.config.renderer.dev.dll');
 
 /**
  * Warn if the DLL is not built
  */
 if (!requiredByDLLConfig && !(fs.existsSync(dllDir) && fs.existsSync(manifest))) {
-  console.log(
-    chalk.black.bgYellow.bold(
-      'The DLL files are missing. Sit back while we build them for you with "yarn build-dll"'
-    )
-  );
+  console.log(chalk.black.bgYellow.bold('The DLL files are missing. Sit back while we build them for you with "yarn build-dll"'));
   execSync('yarn build-dll');
 }
 
@@ -41,11 +35,7 @@ export default merge(baseConfig, {
 
   target: 'electron-renderer',
 
-  entry: [
-    'core-js',
-    'regenerator-runtime/runtime',
-    require.resolve('../../src/index.tsx'),
-  ],
+  entry: ['core-js', 'regenerator-runtime/runtime', require.resolve('../../src/render/index.tsx')],
 
   output: {
     publicPath: `http://localhost:${port}/dist/`,
@@ -61,9 +51,7 @@ export default merge(baseConfig, {
           {
             loader: require.resolve('babel-loader'),
             options: {
-              plugins: [
-                require.resolve('react-refresh/babel'),
-              ].filter(Boolean),
+              plugins: [require.resolve('react-refresh/babel')].filter(Boolean),
             },
           },
         ],
@@ -211,7 +199,6 @@ export default merge(baseConfig, {
     ],
   },
   plugins: [
-
     requiredByDLLConfig
       ? null
       : new webpack.DllReferencePlugin({
@@ -272,13 +259,13 @@ export default merge(baseConfig, {
     },
     before() {
       console.log('Starting Main Process...');
-        spawn('npm', ['run', 'start:main'], {
-          shell: true,
-          env: process.env,
-          stdio: 'inherit',
-        })
-          .on('close', (code) => process.exit(code))
-          .on('error', (spawnError) => console.error(spawnError));
+      spawn('npm', ['run', 'start:main'], {
+        shell: true,
+        env: process.env,
+        stdio: 'inherit',
+      })
+        .on('close', code => process.exit(code))
+        .on('error', spawnError => console.error(spawnError));
     },
   },
 });
