@@ -1,0 +1,18 @@
+@import '~@/styles/variable.scss';
+
+.drag-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border: 2px dashed $--color-text-secondary;
+  color: $--color-text-secondary;
+  cursor: default;
+  border-radius: 20px;
+  font-size: 24px;
+}
+
+.active {
+  border-color: $--color-primary;
+}

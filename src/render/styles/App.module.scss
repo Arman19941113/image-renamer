@@ -1,0 +1,16 @@
+@import '~@/styles/variable.scss';
+
+.button-text {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $--color-primary;
+  font: inherit;
+  &:hover {
+    color: $--color-primary-light-2;
+  }
+  &:active {
+    color: mix($--color-black, $--color-primary, $--button-active-shade-percent);
+  }
+}

@@ -120,7 +120,8 @@ export default merge(baseConfig, {
             loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]',
+                localIdentName: '[local]--[hash:base64:5]',
+                exportLocalsConvention: 'camelCase',
               },
               sourceMap: true,
               importLoaders: 1,

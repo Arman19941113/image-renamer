@@ -1,0 +1,11 @@
+@import '~@/styles/variable.scss';
+
+.home-wrapper {
+  position: relative;
+  height: 100vh;
+  padding: 40px;
+  color: $--color-text-primary;
+  font-size: 14px;
+  // 可拖拽的区域
+  -webkit-app-region: drag;
+}

@@ -1,16 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import t from '@/render/language';
-
-function Hello() {
-  return <div>{t('图片智能命名')}</div>;
-}
+import Home from '@/views/Home';
 
 export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/" component={Hello} />
+        <Route path="/" component={Home} />
       </Switch>
     </Router>
   );
