@@ -3,16 +3,16 @@ import { remote } from 'electron';
 import appStyles from '@/styles/App.module.scss';
 import styles from './DragArea.module.scss';
 
-export interface UpdateFilePaths {
-  (paths: string[]): void;
+export interface StartRename {
+  (filePaths: string[]): void;
 }
 
 export interface DragAreaProps {
-  updateFilePaths: UpdateFilePaths;
+  startRename: StartRename;
 }
 
 export default function DragArea(props: DragAreaProps) {
-  const { updateFilePaths } = props;
+  const { startRename } = props;
 
   const handleSelect = (): void => {
     remote.dialog
@@ -21,7 +21,7 @@ export default function DragArea(props: DragAreaProps) {
         filters: [{ name: 'Images', extensions: ['jpg', 'jpeg'] }],
       })
       .then(res => {
-        updateFilePaths(res.filePaths);
+        startRename(res.filePaths);
         return null;
       })
       .catch(err => {
@@ -31,15 +31,9 @@ export default function DragArea(props: DragAreaProps) {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  let timer = 0;
   const handleDragover = (event: DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
-    if (!timer) {
-      timer = window.setTimeout(() => {
-        timer = 0;
-      }, 200);
-      if (!isDragging) setIsDragging(true);
-    }
+    if (!isDragging) setIsDragging(true);
   };
 
   const handleDragLeave = (event: DragEvent<HTMLDivElement>): void => {
@@ -53,7 +47,7 @@ export default function DragArea(props: DragAreaProps) {
     const { files } = event.dataTransfer;
     if (files.length) {
       const filePaths = Array.from(files).map(file => file.path);
-      updateFilePaths(filePaths);
+      startRename(filePaths);
     }
   };
 
@@ -69,6 +63,7 @@ export default function DragArea(props: DragAreaProps) {
         <button className={appStyles.buttonText} onClick={handleSelect}>
           Select
         </button>
+        <span> jpg files to start rename</span>
       </div>
     </div>
   );
