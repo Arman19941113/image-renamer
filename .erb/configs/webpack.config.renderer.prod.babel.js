@@ -50,7 +50,18 @@ export default merge(baseConfig, {
               publicPath: './',
             },
           },
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: /\.module\.scss$/,
+                localIdentName: '[local]--[hash:base64:5]',
+                exportLocalsConvention: 'camelCase',
+              },
+              sourceMap: true,
+              importLoaders: 1,
+            },
+          },
           'sass-loader',
         ],
       },

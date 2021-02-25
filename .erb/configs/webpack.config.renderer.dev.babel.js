@@ -24,7 +24,9 @@ const requiredByDLLConfig = module.parent.filename.includes('webpack.config.rend
  * Warn if the DLL is not built
  */
 if (!requiredByDLLConfig && !(fs.existsSync(dllDir) && fs.existsSync(manifest))) {
-  console.log(chalk.black.bgYellow.bold('The DLL files are missing. Sit back while we build them for you with "yarn build-dll"'));
+  console.log(
+    chalk.black.bgYellow.bold('The DLL files are missing. Sit back while we build them for you with "yarn build-dll"')
+  );
   execSync('yarn build-dll');
 }
 
@@ -57,79 +59,58 @@ export default merge(baseConfig, {
         ],
       },
       {
-        test: /\.global\.css$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-        ],
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
+      // {
+      //   test: /^((?!\.module).)*\.scss$/,
+      //   use: [
+      //     'style-loader',
+      //     {
+      //       loader: 'css-loader',
+      //       options: {
+      //         modules: false,
+      //         importLoaders: 1,
+      //       },
+      //     },
+      //     'sass-loader',
+      //   ],
+      // },
+      // {
+      //   test: /\.module\.scss$/,
+      //   use: [
+      //     'style-loader',
+      //     '@teamsupercell/typings-for-css-modules-loader',
+      //     {
+      //       loader: 'css-loader',
+      //       options: {
+      //         modules: {
+      //           localIdentName: '[local]--[hash:base64:5]',
+      //           exportLocalsConvention: 'camelCase',
+      //         },
+      //         importLoaders: 1,
+      //       },
+      //     },
+      //     'sass-loader',
+      //   ],
+      // },
+      // If you need scss.t.ts, use config above
       {
-        test: /^((?!\.global).)*\.css$/,
+        test: /\.scss$/,
         use: [
-          {
-            loader: 'style-loader',
-          },
+          'style-loader',
           {
             loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]',
-              },
-              sourceMap: true,
-              importLoaders: 1,
-            },
-          },
-        ],
-      },
-      // SASS support - compile all .global.scss files and pipe it to style.css
-      {
-        test: /\.global\.(scss|sass)$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-          {
-            loader: 'sass-loader',
-          },
-        ],
-      },
-      // SASS support - compile all other .scss files and pipe it to style.css
-      {
-        test: /^((?!\.global).)*\.(scss|sass)$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: '@teamsupercell/typings-for-css-modules-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              modules: {
+                auto: /\.module\.scss$/,
                 localIdentName: '[local]--[hash:base64:5]',
                 exportLocalsConvention: 'camelCase',
               },
-              sourceMap: true,
               importLoaders: 1,
             },
           },
-          {
-            loader: 'sass-loader',
-          },
+          'sass-loader',
         ],
       },
       // WOFF Font
