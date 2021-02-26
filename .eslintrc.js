@@ -3,6 +3,14 @@ module.exports = {
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
+    'no-console': 'off',
+    'no-continue': 'off',
+    'no-plusplus': 'off',
+    'compat/compat': 'off',
+    'promise/catch-or-return': 'off',
+    'default-case': 'off',
+    'prefer-template': 'off',
+    'react/button-has-type': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

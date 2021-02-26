@@ -1,0 +1,29 @@
+@import '~@/styles/variable.scss';
+
+.table-wrapper {
+  -webkit-app-region: no-drag;
+}
+
+.column-wrapper {
+  font-size: 12px;
+  color: $--color-text-primary;
+}
+
+.error {
+  color: $--color-warning;
+}
+
+.success {
+  color: $--color-success;
+}
+
+// todo
+:global .ant-table-body {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #EFEFEF;
+  }
+}

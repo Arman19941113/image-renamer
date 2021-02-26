@@ -1,0 +1,14 @@
+.tag-wrapper {
+  display: flex;
+  flex-flow: wrap;
+  padding: 10px 0 0;
+  > span {
+    width: 70px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    &:hover {
+      box-shadow: 0 0 6px 1px;
+    }
+  }
+}

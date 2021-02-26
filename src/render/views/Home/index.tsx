@@ -1,42 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import DragArea, { StartRename } from '@/views/Home/DragArea';
+import DragArea from '@/views/Home/DragArea';
 import RenameConfig from '@/views/Home/RenameConfig';
 import Loading from '@/components/Loading';
+import ResultModal from '@/views/Home/ResultModal';
+import { Config, ConfigAction, StartRename, RenameResults } from '@/shared/types/root';
 import styles from './Home.module.scss';
 
 export default function Home() {
   const [showLoading, setLoading] = useState(false);
 
-  // drag or select files
+  const initialResults: RenameResults = [];
+  const [renameResults, setRenameResults] = useState(initialResults);
+  const clearRenameResults = () => {
+    setRenameResults([]);
+  };
+
+  const [config, dispatchConfig] = useReducer(
+    (preConfig: Config, action: ConfigAction) => {
+      return { ...preConfig, [action.type]: action.payload };
+    },
+    {
+      format: '{make} {model} {lens} {YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence}',
+      sequence: '001',
+      recursive: true,
+    }
+  );
+
+  // drag or select files to rename
   const startRename: StartRename = filePaths => {
     if (filePaths.length) {
       setLoading(true);
-      console.log(filePaths);
-      ipcRenderer.send('start-rename', filePaths);
+      ipcRenderer.send('start-rename', filePaths, config);
     }
   };
 
+  // get renamed results
   useEffect(() => {
     // images rename work is done, show the result
-    const handleFilesRenamed = (event: IpcRendererEvent, arg: any): void => {
-      console.log(event);
-      console.log(arg);
+    const handleFilesRenamedSuccess = (_event: IpcRendererEvent, results: RenameResults): void => {
       setLoading(false);
-      // result dialog todo
+      setRenameResults(results);
     };
-    ipcRenderer.on('files-renamed', handleFilesRenamed);
+    ipcRenderer.on('files-renamed-success', handleFilesRenamedSuccess);
 
     return () => {
-      ipcRenderer.off('files-renamed', handleFilesRenamed);
+      ipcRenderer.off('files-renamed-success', handleFilesRenamedSuccess);
     };
   }, []);
 
   return (
     <div className={styles.homeWrapper}>
       <DragArea startRename={startRename} />
-      <RenameConfig />
+      <RenameConfig {...{ config, dispatchConfig }} />
       {showLoading && <Loading />}
+      <ResultModal {...{ renameResults, clearRenameResults }} />
     </div>
   );
 }

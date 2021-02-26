@@ -1,5 +1,43 @@
 @import '~@/styles/variable.scss';
 
 .rename-config-wrapper {
+  margin-top: 10px;
   height: calc(100% - 240px);
+}
+
+.flex-box {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.tag-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  > span {
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 0 6px 1px;
+    }
+  }
+}
+
+.label {
+  flex-shrink: 0;
+  width: 220px;
+}
+
+.label-right {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 220px);
+  -webkit-app-region: no-drag;
+}
+
+.recursive-checkbox {
+  flex-shrink: 0;
+  width: 200px;
+  text-align: right;
 }

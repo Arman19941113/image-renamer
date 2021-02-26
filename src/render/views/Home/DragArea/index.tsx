@@ -1,17 +1,10 @@
 import React, { DragEvent, useState } from 'react';
 import { remote } from 'electron';
+import { StartRename } from '@/shared/types/root';
 import appStyles from '@/styles/App.module.scss';
 import styles from './DragArea.module.scss';
 
-export interface StartRename {
-  (filePaths: string[]): void;
-}
-
-export interface DragAreaProps {
-  startRename: StartRename;
-}
-
-export default function DragArea(props: DragAreaProps) {
+export default function DragArea(props: { startRename: StartRename }) {
   const { startRename } = props;
 
   const handleSelect = (): void => {
