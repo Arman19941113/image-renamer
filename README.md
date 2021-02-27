@@ -1,15 +1,9 @@
-## Starting Development
+# Image Renamer
 
-Start the app in the `dev` environment:
+### A cross-platform jpg files rename tool.
 
-```bash
-yarn start
-```
+![home](./assets/Home.jpg)
 
-## Packaging for Production
+### This only works with jpg files with exif data.
 
-To package apps for the local platform:
-
-```bash
-yarn package
-```
+![result](./assets/Result.jpg)
