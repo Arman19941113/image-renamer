@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Table, Tooltip } from 'antd';
-import { RenameResults } from '@/shared/types/root';
+import { RenameResult, RenameResults } from '@/shared/types/root';
 import styles from './ResultModal.module.scss';
 
 export default function ResultModel({
@@ -46,15 +46,15 @@ export default function ResultModel({
         <Table.Column
           title="Filename currently"
           dataIndex="newPath"
-          render={(value, record) =>
-            record.message ? (
+          render={(newPath: string, renameResult: RenameResult) =>
+            renameResult.message ? (
               <div className={styles.error}>
-                <Tooltip title={record.message}>
-                  <div>{value}</div>
+                <Tooltip title={renameResult.message}>
+                  <div>{newPath}</div>
                 </Tooltip>
               </div>
             ) : (
-              <div className={styles.success}>{value}</div>
+              <div className={styles.success}>{newPath}</div>
             )
           }
         />
