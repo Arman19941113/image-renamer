@@ -7,6 +7,14 @@ import ResultModal from '@/views/Home/ResultModal';
 import { Config, ConfigAction, StartRename, RenameResults } from '@/shared/types/root';
 import styles from './Home.module.scss';
 
+const memoryConfig = localStorage.getItem('memoryConfig');
+const defaultConfig = {
+  format: '{YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence} {make} {model} {lens}',
+  sequence: '001',
+  recursive: true,
+};
+const initialConfig: Config = memoryConfig ? JSON.parse(memoryConfig) : defaultConfig;
+
 export default function Home() {
   const [showLoading, setLoading] = useState(false);
 
@@ -16,16 +24,11 @@ export default function Home() {
     setRenameResults([]);
   };
 
-  const [config, dispatchConfig] = useReducer(
-    (preConfig: Config, action: ConfigAction) => {
-      return { ...preConfig, [action.type]: action.payload };
-    },
-    {
-      format: '{YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence} {make} {model} {lens}',
-      sequence: '001',
-      recursive: true,
-    }
-  );
+  const [config, dispatchConfig] = useReducer((preConfig: Config, action: ConfigAction) => {
+    const newConfig = { ...preConfig, [action.type]: action.payload };
+    localStorage.setItem('memoryConfig', JSON.stringify(newConfig));
+    return newConfig;
+  }, initialConfig);
 
   // drag or select files to rename
   const startRename: StartRename = filePaths => {
