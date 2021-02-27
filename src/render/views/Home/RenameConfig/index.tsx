@@ -40,7 +40,7 @@ export default function RenameConfig({
   };
 
   const previewFormat = useMemo(() => {
-    const varMap = getVarMap(config.sequence);
+    const varMap = getVarMap(config.sequence || '0');
     let { format } = config;
     Object.entries(varMap).forEach(([key, value]) => {
       format = format.replaceAll(key, value);

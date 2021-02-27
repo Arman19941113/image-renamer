@@ -14,7 +14,7 @@ function filterSymbol(filePath: string | undefined) {
   return filePath.replace(/[\\/:*?<>|]/g, ' ');
 }
 
-function dealPath(filePath: string, format: string, sequence: number) {
+function dealPath(filePath: string, format: string, sequence: string) {
   return new Promise(resolve => {
     exif(filePath, (error: Error | null, data: ExifData) => {
       const prePath = filePath;
@@ -34,7 +34,7 @@ function dealPath(filePath: string, format: string, sequence: number) {
           '{hh}': timeList[3] || '{hh}',
           '{mm}': timeList[4] || '{mm}',
           '{ss}': timeList[5] || '{ss}',
-          '{sequence}': sequence, // todo support 001
+          '{sequence}': sequence,
           '{make}': filterSymbol(data.image.Make) || '{make}',
           '{model}': filterSymbol(data.image.Model) || '{model}',
           '{lens}': filterSymbol(data.exif.LensModel) || '{lens}',
@@ -48,7 +48,7 @@ function dealPath(filePath: string, format: string, sequence: number) {
             resolve({
               prePath,
               newPath: prePath,
-              message: 'File exists.',
+              message: 'Target filename exists.',
             });
           } else {
             fs.renameSync(prePath, newPath);
@@ -71,10 +71,23 @@ function dealPath(filePath: string, format: string, sequence: number) {
   });
 }
 
-ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Config): void => {
-  const { format, recursive } = config;
-  let sequence = parseInt(config.sequence, 10) || 0;
+function addNumToStr(str = '0', num: number): string {
+  const originLength = str.length;
+  let result = (Number(str) + num).toString();
+  if (result.length > originLength) {
+    result = result.slice(-originLength);
+  } else {
+    while (result.length < originLength) {
+      result = '0' + result;
+    }
+  }
+  return result;
+}
 
+ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Config): void => {
+  const { format, sequence, recursive } = config;
+
+  // get all file path in a flat list
   const flatPaths: string[] = [];
   const rootPaths = [...filePaths]; // root path always work
   const queue = [...filePaths];
@@ -94,8 +107,8 @@ ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Co
 
   const startTime = Date.now();
   const duration = 150;
-  const promiseList = flatPaths.map(targetPath => {
-    return dealPath(targetPath, format, sequence++);
+  const promiseList = flatPaths.map((targetPath, index) => {
+    return dealPath(targetPath, format, addNumToStr(sequence, index));
   });
   Promise.all(promiseList).then(res => {
     const spentTime = Date.now() - startTime;

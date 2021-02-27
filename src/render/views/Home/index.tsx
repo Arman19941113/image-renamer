@@ -21,7 +21,7 @@ export default function Home() {
       return { ...preConfig, [action.type]: action.payload };
     },
     {
-      format: '{make} {model} {lens} {YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence}',
+      format: '{YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence} {make} {model} {lens}',
       sequence: '001',
       recursive: true,
     }
