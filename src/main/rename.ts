@@ -2,86 +2,65 @@ import { ipcMain, IpcMainEvent } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import exif, { ExifData } from 'exif';
+import {
+  addNumToStr,
+  renameWithTemporaryPath,
+  getVariablesMap,
+  assumeRename,
+  VariablesMap,
+  RenameResult,
+  PathRecord,
+  Config,
+} from './util';
 
-interface Config {
-  format: string;
-  sequence: string;
-  recursive: boolean;
-}
+const exifVariables = ['{YYYY}', '{MM}', '{DD}', '{hh}', '{mm}', '{ss}', '{make}', '{model}', '{lens}'];
 
-function filterSymbol(filePath: string | undefined) {
-  if (!filePath) return '';
-  return filePath.replace(/[\\/:*?<>|]/g, ' ');
-}
-
-function dealPath(filePath: string, format: string, sequence: string) {
-  return new Promise(resolve => {
-    exif(filePath, (error: Error | null, data: ExifData) => {
-      const prePath = filePath;
-      if (error) {
-        resolve({
-          prePath,
-          newPath: prePath,
-          message: error.message,
-        });
-      } else {
-        const timeList = data.exif.CreateDate?.replace(' ', ':').split(':') || [];
-        let newFilename = format + path.extname(prePath);
-        const varMap = {
-          '{YYYY}': timeList[0] || '{YYYY}',
-          '{MM}': timeList[1] || '{MM}',
-          '{DD}': timeList[2] || '{DD}',
-          '{hh}': timeList[3] || '{hh}',
-          '{mm}': timeList[4] || '{mm}',
-          '{ss}': timeList[5] || '{ss}',
-          '{sequence}': sequence,
-          '{make}': filterSymbol(data.image.Make) || '{make}',
-          '{model}': filterSymbol(data.image.Model) || '{model}',
-          '{lens}': filterSymbol(data.exif.LensModel) || '{lens}',
-        };
-        Object.entries(varMap).forEach(([key, value]) => {
-          newFilename = newFilename.replaceAll(key, value);
-        });
-        const newPath = prePath.replace(path.basename(prePath), newFilename);
-        try {
-          if (fs.existsSync(newPath)) {
-            resolve({
-              prePath,
-              newPath: prePath,
-              message: 'Target filename exists.',
-            });
-          } else {
-            fs.renameSync(prePath, newPath);
-            // todo revert record
-            resolve({
-              prePath,
-              newPath,
-              message: '',
-            });
-          }
-        } catch (e) {
-          resolve({
-            prePath,
-            newPath: prePath,
-            message: e.message,
-          });
-        }
-      }
-    });
+function renamePath(variablesMap: VariablesMap, format: string, originPath: string, currentPath: string): RenameResult {
+  // generate new path by format
+  let newFilename = format + path.extname(currentPath);
+  Object.entries(variablesMap).forEach(([key, value]) => {
+    newFilename = newFilename.replaceAll(key, value);
   });
+  const newPath = currentPath.replace(path.basename(currentPath), newFilename);
+
+  if (fs.existsSync(newPath)) {
+    const finalPath = assumeRename(currentPath, originPath);
+    return {
+      prePath: originPath,
+      newPath: finalPath,
+      message: 'Target filename exists.',
+    };
+  }
+
+  fs.renameSync(currentPath, newPath);
+  return {
+    prePath: originPath,
+    newPath,
+    message: '',
+  };
 }
 
-function addNumToStr(str = '0', num: number): string {
-  const originLength = str.length;
-  let result = (Number(str) + num).toString();
-  if (result.length > originLength) {
-    result = result.slice(-originLength);
-  } else {
-    while (result.length < originLength) {
-      result = '0' + result;
+function dealPath(pathInfo: PathRecord, format: string, sequence: string) {
+  return new Promise(resolve => {
+    const { originPath, randomPath: currentPath } = pathInfo;
+    if (exifVariables.some(item => format.includes(item))) {
+      exif(currentPath, (error: Error | null, exifData: ExifData) => {
+        if (error) {
+          // read exif data failed, don't rename(equal to rename to the origin filename)
+          const finalPath = assumeRename(currentPath, originPath);
+          resolve({
+            prePath: originPath,
+            newPath: finalPath,
+            message: error.message,
+          });
+        } else {
+          resolve(renamePath(getVariablesMap(sequence, exifData), format, originPath, currentPath));
+        }
+      });
+    } else {
+      resolve(renamePath(getVariablesMap(sequence), format, originPath, currentPath));
     }
-  }
-  return result;
+  });
 }
 
 ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Config): void => {
@@ -107,8 +86,8 @@ ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Co
 
   const startTime = Date.now();
   const duration = 150;
-  const promiseList = flatPaths.map((targetPath, index) => {
-    return dealPath(targetPath, format, addNumToStr(sequence, index));
+  const promiseList = renameWithTemporaryPath(flatPaths).map((pathInfo, index) => {
+    return dealPath(pathInfo, format, addNumToStr(sequence, index));
   });
   Promise.all(promiseList).then(res => {
     const spentTime = Date.now() - startTime;
