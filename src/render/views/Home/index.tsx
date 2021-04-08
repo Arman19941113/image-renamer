@@ -12,6 +12,7 @@ const defaultConfig = {
   format: '{YYYY}-{MM}-{DD} {hh}{mm}{ss}-{sequence} {make} {model} {lens}',
   sequence: '001',
   recursive: true,
+  remove: false, // remove files without exif data to desktop
 };
 const initialConfig: Config = memoryConfig ? JSON.parse(memoryConfig) : defaultConfig;
 

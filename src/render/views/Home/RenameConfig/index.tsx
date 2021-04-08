@@ -1,6 +1,6 @@
 import React, { useMemo, ChangeEvent, Dispatch } from 'react';
 import VariableTags, { getVarMap } from '@/views/Home/VariableTags';
-import { Input, Checkbox } from 'antd';
+import { Input, Checkbox, Tooltip } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Config, ConfigAction } from '@/shared/types/root';
 import styles from './RenameConfig.module.scss';
@@ -22,9 +22,16 @@ export default function RenameConfig({
     });
   };
 
-  const handleChecked = (event: CheckboxChangeEvent) => {
+  const handleCheckedRecursive = (event: CheckboxChangeEvent) => {
     dispatchConfig({
       type: 'recursive',
+      payload: event.target.checked,
+    });
+  };
+
+  const handleCheckedRemove = (event: CheckboxChangeEvent) => {
+    dispatchConfig({
+      type: 'remove',
       payload: event.target.checked,
     });
   };
@@ -48,15 +55,27 @@ export default function RenameConfig({
     return format;
   }, [config]);
 
+  const exifVariables = ['{YYYY}', '{MM}', '{DD}', '{hh}', '{mm}', '{ss}', '{make}', '{model}', '{lens}'];
+  const removeCheckBox = exifVariables.some(item => config.format.includes(item)) ? (
+    <Tooltip title="Remove files without exif data to desktop">
+      <Checkbox className={styles.checkbox} checked={config.remove} onChange={handleCheckedRemove}>
+        Remove no-exif
+      </Checkbox>
+    </Tooltip>
+  ) : (
+    ''
+  );
+
   return (
     <div className={styles.renameConfigWrapper}>
       <div className={styles.flexBox}>
         <div className={styles.label}>Starting sequence number:</div>
         <div className={styles.labelRight}>
           <Input value={config.sequence} onChange={handleSequenceChange} />
-          <Checkbox className={styles.recursiveCheckbox} checked={config.recursive} onChange={handleChecked}>
+          <Checkbox className={styles.checkbox} checked={config.recursive} onChange={handleCheckedRecursive}>
             Recursive mode
           </Checkbox>
+          {removeCheckBox}
         </div>
       </div>
       <div className={styles.flexBox}>

@@ -1,5 +1,6 @@
 import { ipcMain, IpcMainEvent } from 'electron';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import exif, { ExifData } from 'exif';
 import {
@@ -14,6 +15,21 @@ import {
 } from './util';
 
 const exifVariables = ['{YYYY}', '{MM}', '{DD}', '{hh}', '{mm}', '{ss}', '{make}', '{model}', '{lens}'];
+
+function removeToDesktop(originPath: string, currentPath: string): RenameResult {
+  const removeTargetDir = path.join(os.homedir(), 'Desktop', 'no-exif-dir');
+  if (!fs.existsSync(removeTargetDir)) {
+    fs.mkdirSync(removeTargetDir);
+  }
+  const basename = path.basename(originPath);
+  const targetPath = path.join(removeTargetDir, basename);
+  const finalPath = assumeRename(currentPath, targetPath);
+  return {
+    prePath: originPath,
+    newPath: finalPath,
+    message: '',
+  };
+}
 
 function renamePath(variablesMap: VariablesMap, format: string, originPath: string, currentPath: string): RenameResult {
   // generate new path by format
@@ -40,19 +56,25 @@ function renamePath(variablesMap: VariablesMap, format: string, originPath: stri
   };
 }
 
-function dealPath(pathInfo: PathRecord, format: string, sequence: string) {
+function dealPath(pathInfo: PathRecord, format: string, sequence: string, remove: boolean) {
   return new Promise(resolve => {
     const { originPath, randomPath: currentPath } = pathInfo;
     if (exifVariables.some(item => format.includes(item))) {
       exif(currentPath, (error: Error | null, exifData: ExifData) => {
         if (error) {
-          // read exif data failed, don't rename(equal to rename to the origin filename)
-          const finalPath = assumeRename(currentPath, originPath);
-          resolve({
-            prePath: originPath,
-            newPath: finalPath,
-            message: error.message,
-          });
+          // read exif data failed
+          if (remove) {
+            // remove file to desktop
+            resolve(removeToDesktop(originPath, currentPath));
+          } else {
+            // don't rename(equal to rename to the origin filename)
+            const finalPath = assumeRename(currentPath, originPath);
+            resolve({
+              prePath: originPath,
+              newPath: finalPath,
+              message: error.message,
+            });
+          }
         } else {
           resolve(renamePath(getVariablesMap(sequence, exifData), format, originPath, currentPath));
         }
@@ -64,7 +86,7 @@ function dealPath(pathInfo: PathRecord, format: string, sequence: string) {
 }
 
 ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Config): void => {
-  const { format, sequence, recursive } = config;
+  const { format, sequence, recursive, remove } = config;
 
   // get all file path in a flat list
   const flatPaths: string[] = [];
@@ -87,7 +109,7 @@ ipcMain.on('start-rename', (event: IpcMainEvent, filePaths: string[], config: Co
   const startTime = Date.now();
   const duration = 150;
   const promiseList = renameWithTemporaryPath(flatPaths).map((pathInfo, index) => {
-    return dealPath(pathInfo, format, addNumToStr(sequence, index));
+    return dealPath(pathInfo, format, addNumToStr(sequence, index), remove);
   });
   Promise.all(promiseList).then(res => {
     const spentTime = Date.now() - startTime;

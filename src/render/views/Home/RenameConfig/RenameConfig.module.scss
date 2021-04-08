@@ -35,8 +35,12 @@
   -webkit-app-region: no-drag;
 }
 
-.recursive-checkbox {
+.checkbox {
   flex-shrink: 0;
-  width: 200px;
-  text-align: right;
+  margin-left: 40px !important;
+  :global {
+    .ant-checkbox + span {
+      padding-right: 0;
+    }
+  }
 }

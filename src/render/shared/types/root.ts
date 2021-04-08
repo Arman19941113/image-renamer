@@ -2,10 +2,11 @@ export interface Config {
   format: string;
   sequence: string;
   recursive: boolean;
+  remove: boolean;
 }
 
 export interface ConfigAction {
-  type: 'format' | 'sequence' | 'recursive';
+  type: 'format' | 'sequence' | 'recursive' | 'remove';
   payload: string | boolean;
 }
 

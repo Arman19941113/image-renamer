@@ -7,6 +7,7 @@ export interface Config {
   format: string;
   sequence: string;
   recursive: boolean;
+  remove: boolean;
 }
 
 export interface RenameResult {
