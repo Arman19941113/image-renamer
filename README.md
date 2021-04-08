@@ -2,7 +2,7 @@
 
 English | [简体中文](./README-zh.md)
 
-Download APP: [MacOS](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.2/ImageRenamer-0.0.2.dmg) [Windows](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.2/ImageRenamer.Setup.0.0.2.exe)
+Download APP: [MacOS](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.3/ImageRenamer-0.0.3.dmg) [Windows](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.3/ImageRenamer.Setup.0.0.3.exe)
 
 ### A cross-platform jpg files rename tool.
 

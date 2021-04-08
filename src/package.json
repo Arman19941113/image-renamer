@@ -1,7 +1,7 @@
 {
   "name": "image-renamer",
   "productName": "ImageRenamer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ImageRenamer",
   "main": "./dist/main.prod.js",
   "author": {

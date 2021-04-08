@@ -2,7 +2,7 @@
 
 [English](./README.md) | 简体中文
 
-下载链接: [MacOS](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.2/ImageRenamer-0.0.2.dmg) [Windows](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.2/ImageRenamer.Setup.0.0.2.exe)
+下载链接: [MacOS](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.3/ImageRenamer-0.0.3.dmg) [Windows](https://github.com/Arman19941113/image-renamer/releases/download/v0.0.3/ImageRenamer.Setup.0.0.3.exe)
 
 ### 跨平台图片文件批量重命名工具
 
